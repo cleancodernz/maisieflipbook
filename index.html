@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Flipper</title>
     <style>
+        
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 30vh;
             background-color: #f0f0f0;
             margin: 0;
         }
@@ -52,11 +53,12 @@
             border-radius: 50%;
         }
         .arrow.left {
-            left: 10px;
+            left: -100px;
         }
         .arrow.right {
-            right: 10px;
+            right: -100px;
         }
+    
     </style>
 </head>
 <body>
@@ -78,13 +80,10 @@
     const imageFront = document.getElementById('imageFront');
     const imageBack = document.getElementById('imageBack');
 
-    alert('loading');
-
-    // Function to fetch images from the Azure Function
+        // Function to fetch images from the Azure Function
     async function fetchImages() {
         const response = await fetch('https://instagramintegration.azurewebsites.net/api/instagramintegration?code=pIjCU18HwUYY1RytFwx0_gxhcDKINpfvOJvcwQjz39BSAzFufaUxoA%3D%3D');
-        images = await response.json();
-        alert(images.length);
+        images = await response.json();        
         if (images.length > 0) {
             updateImages();
         }
