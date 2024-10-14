@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Flipbook</title>
+    <title>Image Flipper</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,51 +11,104 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f9;
+            margin: 0;
+            background-color: #f0f0f0;
         }
-        .flipbook {
-            display: flex;
-            width: 500px;
-            height: 500px;
-            perspective: 1000px;
+        .image-container {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
         }
-        .flipbook img {
+        .image-container img {
             width: 100%;
-            height: 100%;
-            position: absolute;
-            backface-visibility: hidden;
-            transition: transform 1s;
+            border-radius: 10px;
         }
-        .flipbook img.flip {
-            transform: rotateY(180deg);
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .arrow.left {
+            left: 10px;
+        }
+        .arrow.right {
+            right: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="flipbook" id="flipbook">
-        <!-- Images will be inserted here by JavaScript -->
-    </div>
 
-    <script>
-        async function fetchImages() {
-            const response = await fetch('https://instagramintegration.azurewebsites.net/api/instagramintegration?code=pIjCU18HwUYY1RytFwx0_gxhcDKINpfvOJvcwQjz39BSAzFufaUxoA%3D%3D');
-            const images = await response.json();
-            const flipbook = document.getElementById('flipbook');
+<div class="image-container">
+    <span class="arrow left">&#8592;</span>
+    <img id="imageDisplay" src="https://via.placeholder.com/600x400?text=Image+1" alt="Image">
+    <span class="arrow right">&#8594;</span>
+</div>
 
-            images.forEach((imageUrl, index) => {
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                img.style.transform = `rotateY(${index * 180}deg)`;
-                flipbook.appendChild(img);
+<script>
+    // Array of image URLs
 
-                // Flip the image every few seconds
-                setInterval(() => {
-                    img.classList.toggle('flip');
-                }, 3000);
-            });
+    const response = await fetch('https://instagramintegration.azurewebsites.net/api/instagramintegration?code=pIjCU18HwUYY1RytFwx0_gxhcDKINpfvOJvcwQjz39BSAzFufaUxoA%3D%3D');
+    const images = await response.json();
+
+    let currentIndex = 0;
+
+    const imageDisplay = document.getElementById('imageDisplay');
+    const leftArrow = document.querySelector('.arrow.left');
+    const rightArrow = document.querySelector('.arrow.right');
+
+    // Function to update the displayed image
+    function updateImage(index) {
+        imageDisplay.src = images[index];
+    }
+
+    // Event listeners for arrow clicks
+    leftArrow.addEventListener('click', () => {
+        currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+        updateImage(currentIndex);
+    });
+
+    rightArrow.addEventListener('click', () => {
+        currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+        updateImage(currentIndex);
+    });
+
+    // Swipe functionality
+    let startX = 0;
+
+    imageDisplay.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    imageDisplay.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        if (startX - endX > 50) {
+            // Swiped left
+            currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+            updateImage(currentIndex);
+        } else if (endX - startX > 50) {
+            // Swiped right
+            currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+            updateImage(currentIndex);
         }
+    });
 
-        fetchImages();
-    </script>
+    // Keyboard arrow functionality
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+            updateImage(currentIndex);
+        } else if (e.key === 'ArrowRight') {
+            currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+            updateImage(currentIndex);
+        }
+    });
+</script>
+
 </body>
 </html>
