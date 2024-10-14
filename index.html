@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Flipper</title>
     <style>
-        
         body {
             display: flex;
             justify-content: center;
@@ -18,28 +17,28 @@
             position: relative;
             width: 80%;
             max-width: 600px;
-            perspective: 1000px;
+            perspective: 1000px; /* Create a 3D perspective */
         }
         .flip-card {
             position: relative;
             width: 100%;
             height: auto;
-            transform-style: preserve-3d;
-            transition: transform 0.8s;
+            transform-style: preserve-3d; /* Enable 3D transformations */
+            transition: transform 1s; /* Duration of the transition */
             cursor: pointer;
         }
         .flip-card img {
             width: 100%;
             border-radius: 10px;
             position: absolute;
-            backface-visibility: hidden;
+            backface-visibility: hidden; /* Hide the back image when not visible */
         }
         .flip-card .front {
             z-index: 2;
-            transform: rotateY(0deg);
+            transform: rotateY(0deg); /* Default position */
         }
         .flip-card .back {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg); /* Back image starts rotated */
         }
         .arrow {
             position: absolute;
@@ -58,7 +57,13 @@
         .arrow.right {
             right: -100px;
         }
-    
+
+        /* Media query to hide arrows on mobile devices */
+        @media (max-width: 768px) {
+            .arrow {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -80,10 +85,10 @@
     const imageFront = document.getElementById('imageFront');
     const imageBack = document.getElementById('imageBack');
 
-        // Function to fetch images from the Azure Function
+    // Function to fetch images from the Azure Function
     async function fetchImages() {
         const response = await fetch('https://instagramintegration.azurewebsites.net/api/instagramintegration?code=pIjCU18HwUYY1RytFwx0_gxhcDKINpfvOJvcwQjz39BSAzFufaUxoA%3D%3D');
-        images = await response.json();        
+        images = await response.json();
         if (images.length > 0) {
             updateImages();
         }
@@ -95,14 +100,15 @@
         imageBack.src = images[(currentIndex + 1) % images.length];
     }
 
-    // Function to flip the card
+    // Function to flip the card with a page curl effect
     function flipCardImage() {
+        // Add the class to trigger the animation
         flipCard.style.transform = "rotateY(180deg)";
         setTimeout(() => {
-            currentIndex = (currentIndex + 1) % images.length;
-            updateImages();
-            flipCard.style.transform = "rotateY(0deg)";
-        }, 400);
+            currentIndex = (currentIndex + 1) % images.length; // Move to the next image
+            updateImages(); // Update the images
+            flipCard.style.transform = "rotateY(0deg)"; // Reset to original position
+        }, 600); // Delay to match the flip animation duration
     }
 
     // Event listeners for arrow clicks
