@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Callback</title>
+</head>
+<body>
+    <h2>Processing OAuth Response...</h2>
+
+    <script>
+        // Parse the URL query string to get the authorization code
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const authCode = urlParams.get('code');
+
+        if (authCode) {
+            // Now send this authorization code to your Azure Function (or server) to exchange for an access token
+            fetch('https://<your-azure-function-url>/api/exchangeAuthCode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code: authCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response (store access token, etc.)
+                console.log('Access token:', data.access_token);
+                // Redirect the user back to the main app or page
+                window.location.href = '/';
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            console.error('Authorization code not found.');
+        }
+    </script>
+</body>
+</html>
